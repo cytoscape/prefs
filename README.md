@@ -9,7 +9,7 @@ Once you download, authorize and open the program, you should see this:
 
 <ScreenShot.png>
 
-![Screen Dump](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![Screen Dump](https://github.com/cytoscape/prefs/commit/06ce464e0f8aef2b0cc7037848194ce05a8b3e7d "Screen shot of Preferences")
 
 This prototype will read from your current preferences saved by Cytoscape, but will not write back any changes.
 
