@@ -6,9 +6,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -21,13 +19,13 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
-import org.lib.BoxComponent;
-import org.lib.BoxSubPanel;
-import org.lib.ColorMenuButton;
-import org.lib.GuiFactory;
-import org.lib.ParseUtil;
-import org.lib.SElement;
-import org.lib.TextTraits;
+import org.cytoscape.prefs.lib.AntiAliasedPanel;
+import org.cytoscape.prefs.lib.BoxComponent;
+import org.cytoscape.prefs.lib.ColorMenuButton;
+import org.cytoscape.prefs.lib.HBox;
+import org.cytoscape.prefs.lib.ParseUtil;
+import org.cytoscape.prefs.lib.TextTraits;
+import org.cytoscape.prefs.lib.VBox;
 
 public class PrefsText extends AbstractPrefsPanel {
 
@@ -62,8 +60,8 @@ public class PrefsText extends AbstractPrefsPanel {
 	
 	private JButton fBtnSetAllTT;
 	private final JRadioButton[] fRadioButtons = new JRadioButton[kNumTextTraits];
-	private BoxSubPanel fFunctionPanel;
-	private BoxSubPanel fTextSettingsPanel;
+	private AntiAliasedPanel fFunctionPanel;
+	private AntiAliasedPanel fTextSettingsPanel;
 //	private BoxSubPanel fSamplePanel;
 	
 	private boolean fInitializingUI;
@@ -90,12 +88,13 @@ public class PrefsText extends AbstractPrefsPanel {
 		add(page);
 	}
 
-	private BoxSubPanel getFunctionPanel()
+	private AntiAliasedPanel getFunctionPanel()
 	{
 		if (fFunctionPanel == null)
 		{
-			BoxSubPanel p = new BoxSubPanel("Context");
-			GuiFactory.setSizes(p, new Dimension(240, 220));
+			VBox p = new VBox("Components", true, false);
+			
+			AntiAliasedPanel.setSizes(p, new Dimension(240, 220));
 			ButtonGroup btnGroup = new ButtonGroup();
 			for (int currTrait = 0; currTrait < kNumTextTraits; currTrait++)
 			{
@@ -104,7 +103,7 @@ public class PrefsText extends AbstractPrefsPanel {
 				fRadioButtons[currTrait].addActionListener(new ActionListener()	{	public void actionPerformed(ActionEvent e)		{		changeCurrentTarget(trait);	}			});
 //				fRadioButtons[currTrait].setFont(panelFont);
 				btnGroup.add(fRadioButtons[currTrait]);
-				p.add(fRadioButtons[currTrait]);
+				p.add(new HBox(true, true, fRadioButtons[currTrait]));
 			}
 			
 			fBtnSetAllTT = new JButton("Use For All");
@@ -117,27 +116,27 @@ public class PrefsText extends AbstractPrefsPanel {
 		return fFunctionPanel;
 	}
 	
-	private BoxSubPanel initTextSettingsPanel()
+	private AntiAliasedPanel initTextSettingsPanel()
 	{
 		if (fTextSettingsPanel == null)
 		{
-			BoxSubPanel p = new BoxSubPanel("Text Settings");
-			GuiFactory.setSizes(p, new Dimension(310, 220));
+			VBox p = new VBox("Text Settings", true, true);
+			AntiAliasedPanel.setSizes(p, new Dimension(310, 220));
 			fCbTextFont = new JComboBox<String>();
 			fCbTextFont.setMaximumRowCount(32);
-			GuiFactory.setSizes(fCbTextFont, new Dimension(230, 27));
+			AntiAliasedPanel.setSizes(fCbTextFont, new Dimension(230, 27));
 			fCbTextFont.addItem(kDefaultFont);
 			if (sFontFamilies == null) initFonts();
 			for(String familyName : sFontFamilies)
 				fCbTextFont.addItem(familyName);
 			fCbTextFont.addActionListener(new ActionListener()	{		public void actionPerformed(ActionEvent e)	{		textSettingChanged();	}			});
-			
-			fCbTextSize = new JComboBox<String>(new String[] { "8", "9", "10", "12"} );
-			fCbTextSize.setSelectedIndex(2);
-			fCbTextSize.addActionListener(new ActionListener()	{		public void actionPerformed(ActionEvent e)	{		textSettingChanged();	}			});
 			p.add(new BoxComponent(new JLabel("Font:"), fCbTextFont));
 			p.addLeading();
-			
+		
+			fCbTextSize = new JComboBox<String>(new String[] { "8", "9", "10", "11", "12"} );
+			fCbTextSize.setSelectedIndex(2);
+			fCbTextSize.addActionListener(new ActionListener()	{		public void actionPerformed(ActionEvent e)	{		textSettingChanged();	}			});
+			fCbTextSize.setMaximumSize(new Dimension(60, 28));
 			fBtnTextColor = new ColorMenuButton();
 			fBtnTextColor.setText("Color");
 			fBtnTextColor.setColor(Color.black);
@@ -152,22 +151,22 @@ public class PrefsText extends AbstractPrefsPanel {
 			fCbTextStyle.addActionListener(new ActionListener()		{		public void actionPerformed(ActionEvent e)	{		textSettingChanged();	}			});
 			fLblTextStyle = new JLabel("Style:");
 			p.add(new BoxComponent( new JLabel("Size:"), fCbTextSize));
-			p.addLeading();
+//			p.addLeading();
 			p.add(new BoxComponent(fLblTextColor, fBtnTextColor));
-			p.addLeading();
-		p.add(new BoxComponent( fLblTextStyle, fCbTextStyle));
-			p.addSpacer();
+//			p.addLeading();
+			p.add(new BoxComponent( fLblTextStyle, fCbTextStyle));
+			p.add(Box.createVerticalGlue());
 			fTextSettingsPanel = p;
 		}
 		
 		return fTextSettingsPanel;
 	}
-	SElement fElement;
+//	SElement fElement;
 	
-	private BoxSubPanel getExampleTextPanel()
+	private AntiAliasedPanel getExampleTextPanel()
 	{
-		BoxSubPanel p = new BoxSubPanel("Sample Text");
-		GuiFactory.setSizes(p, new Dimension(550, 130));
+		AntiAliasedPanel p = new AntiAliasedPanel("Sample Text");
+		AntiAliasedPanel.setSizes(p, new Dimension(550, 130));
 		fSamplePane = new JEditorPane();
 		fSamplePane.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 		fSamplePane.setBackground(Color.white);
@@ -192,22 +191,6 @@ public class PrefsText extends AbstractPrefsPanel {
 
 	private TextTraits getCurrentTextTraits()
 	{
-		List<SElement> traitsList = new ArrayList<SElement> ();  //Prefs.getPrefsAtPath(fElement, kTraitPaths[fCurrentTextTrait], "TextTraits");
-//		if (traitsList.size( )== 1)
-//			return new TextTraits(traitsList.get(0));
-//		else
-			if (traitsList.size() > 1)
-		{
-			// <TextTraits name="label" , name="numbers", name="gate"
-			for (SElement anElement : traitsList)
-			{
-				String nameValue = anElement.getString("name");
-//				if ("numbers".equals(nameValue))
-//				{
-//					return new TextTraits(anElement);
-//				} else if ("label".equals(nameValue)) { return new TextTraits(anElement); }
-			}
-		}
 		TextTraits deftrait = makeDefaultTextTraits();
 		return deftrait;
 	}
@@ -259,33 +242,33 @@ public class PrefsText extends AbstractPrefsPanel {
 	{
 		Font newFont = new Font(font, styleInt, ParseUtil.getInteger(size, 10));
 		fSamplePane.setFont(newFont);
-		fSamplePane.setText("Lazy Dog");
+//		fSamplePane.setText("Lazy Dog");
 		fSamplePane.setForeground(color);
 
 	}
 	
 
-	private SElement extractCurrentTrait()
+	private void extractCurrentTrait()
 	{
-		TextTraits fontPref = getCurrentTextTraits();
-		if (fontPref == null)
-		{
-			fontPref = makeDefaultTextTraits();
-//			getPrefsElement().getChildSElement(kTraitNames[fCurrentTextTrait]).addContent(fontPref);
-		}
-		
-		String fontName = (String) fCbTextFont.getSelectedItem();
-		if (fontName == null) fontName = ""; 
-		fontPref.setFontName(fontName);
-		fontPref.setSize(Integer.parseInt((String) fCbTextSize.getSelectedItem()));
-		fontPref.setColor(fBtnTextColor.getColor());
-//		fontPref.setAttribute("just", (String) fCbTextJustification.getSelectedItem());
-		fontPref.setStyle(ParseUtil.stringToStyle((String) fCbTextStyle.getSelectedItem(), false));
-//		boolean needsLayoutDiscrim = fCurrentTextTrait == kLayoutAxesIndex || fCurrentTextTrait == kLayoutAxesNumIndex;
-//		String discrimName =  needsLayoutDiscrim ? "name" : null;
-//		String discrimValue = needsLayoutDiscrim ? (fCurrentTextTrait == kLayoutAxesIndex) ? "label" : "numbers" : null;
-//		Prefs.setPrefsAtPath(fElement, kTraitPaths[fCurrentTextTrait], fontPref.getAsElement(), discrimName, discrimValue);
-		return null; // fontPref.getAsElement();
+//		TextTraits fontPref = getCurrentTextTraits();
+//		if (fontPref == null)
+//		{
+//			fontPref = makeDefaultTextTraits();
+////			getPrefsElement().getChildSElement(kTraitNames[fCurrentTextTrait]).addContent(fontPref);
+//		}
+//		
+//		String fontName = (String) fCbTextFont.getSelectedItem();
+//		if (fontName == null) fontName = ""; 
+//		fontPref.setFontName(fontName);
+//		fontPref.setSize(Integer.parseInt((String) fCbTextSize.getSelectedItem()));
+//		fontPref.setColor(fBtnTextColor.getColor());
+////		fontPref.setAttribute("just", (String) fCbTextJustification.getSelectedItem());
+//		fontPref.setStyle(ParseUtil.stringToStyle((String) fCbTextStyle.getSelectedItem(), false));
+////		boolean needsLayoutDiscrim = fCurrentTextTrait == kLayoutAxesIndex || fCurrentTextTrait == kLayoutAxesNumIndex;
+////		String discrimName =  needsLayoutDiscrim ? "name" : null;
+////		String discrimValue = needsLayoutDiscrim ? (fCurrentTextTrait == kLayoutAxesIndex) ? "label" : "numbers" : null;
+////		Prefs.setPrefsAtPath(fElement, kTraitPaths[fCurrentTextTrait], fontPref.getAsElement(), discrimName, discrimValue);
+//		return null; // fontPref.getAsElement();
 	}
 
 	private static TextTraits makeDefaultTextTraits()
@@ -336,16 +319,11 @@ public class PrefsText extends AbstractPrefsPanel {
 //		return p;
 //    }
 	
-	public static void setDefaults(SElement p)
-    {
+//	public static void setDefaults(SElement p)
+//    {
 //		TextTraits deftrait = makeDefaultTextTraits();
 			
 
-    	// test to see that all 7 "TextTraits" have existing parents and exist themselves. Might as well do it here
-		// since nobody else in the project does it during first time launch of FJ. 
-		
-    	// because some TextTraits parents are nested, I first make sure that the parent exist. I'm sure there's a way 
-		// to shorten this ;)
 		
     	// 		"ChartData/Graph", 	"ChartData/Graph", 	"ChartData/Legend/TextTraits" };
 //    	
@@ -381,7 +359,7 @@ public class PrefsText extends AbstractPrefsPanel {
 //    		p.getChild("ChartData").addContent(gElement);}
 //    	
 ////    	p.addContent(prefs);
-    }
+//    }
 	
 	private void textSettingChanged()
 	{

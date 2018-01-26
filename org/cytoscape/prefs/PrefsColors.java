@@ -5,8 +5,9 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import javax.security.auth.Refreshable;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -14,17 +15,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
-import org.lib.Borders;
-import org.lib.ColorBrewer;
-import org.lib.ColorPane;
-import org.lib.Colors;
-import org.lib.HBox;
-import org.lib.VBox;
+import org.cytoscape.prefs.lib.ColorBrewer;
+import org.cytoscape.prefs.lib.ColorPane;
+import org.cytoscape.prefs.lib.Colors;
+import org.cytoscape.prefs.lib.HBox;
+import org.cytoscape.prefs.lib.VBox;
 
 public class PrefsColors extends AbstractPrefsPanel {
 
+	public static Border doubleRaised = BorderFactory.createCompoundBorder( BorderFactory.createRaisedBevelBorder(), BorderFactory.createRaisedBevelBorder());
 	HBox lineOfPalettes;
 	HBox lineOfPalettes2;
 	protected PrefsColors(Cy3PreferencesRoot dlog) {
@@ -54,7 +55,7 @@ public class PrefsColors extends AbstractPrefsPanel {
 	    page.add(text);
 	    
 	    VBox controlBox = new VBox("controls");
-	    controlBox.setBorder(Borders.doubleRaised);
+	    controlBox.setBorder(doubleRaised);
 	    JRadioButton a = makeRadioButton("Sequential"); 
 	    JRadioButton b = makeRadioButton("Divergent"); 
 	    JRadioButton c = makeRadioButton("Qualitative");
@@ -89,13 +90,12 @@ public class PrefsColors extends AbstractPrefsPanel {
    		String name = "Pick a color scheme";
    		HBox line = new HBox();
 	    
-	    
 	    JLabel label = new JLabel(name);
 	    HBox justLabel = new HBox(Box.createRigidArea(new Dimension(32,7)), label);
 	    VBox box = new VBox(true, true, justLabel, line);
 	    box.setAlignmentX(CENTER_ALIGNMENT);
 //	    line.setPreferredSize(new Dimension(220, 100));
-		box.setBorder(Borders.doubleRaised);
+		box.setBorder(doubleRaised);
 		box.setMaximumSize(new Dimension(420, 270));
 		
 		box.add(lineOfPalettes);
@@ -128,23 +128,22 @@ public class PrefsColors extends AbstractPrefsPanel {
     JCheckBox colorBlindSafeCheckBox = makeCheckBox("Color blind safe");
     int count = 0;
     int offset = 0;
-public void populate()
-{
-	String state = buttonGroup.getSelection().getActionCommand();
-	System.out.println("populate " + state);
-	lineOfPalettes.removeAll();
-	lineOfPalettes2.removeAll();
-	if ("Divergent".equals(state))  offset = 0;
-	if ("Sequential".equals(state))  offset = 4;
-	if ("Qualitative".equals(state))  offset = 9;
-	
-	ColorBrewer[] palettes  = ColorBrewer.getQualitativeColorPalettes(colorBlindSafe); 
-	
-    int[] starts = new int[] { 11, 21, 31, 41, 51, 61, 71, 81 };
-    
-    buildPalettes(starts);
-    lineOfPalettes.setVisible(false);
-    lineOfPalettes.setVisible(true);			// TODO REFRESH
+
+    public void populate()
+	{
+		String state = buttonGroup.getSelection().getActionCommand();
+		colorBlindSafe = colorBlindSafeCheckBox.isSelected();
+	//	System.out.println("populate " + state);
+		lineOfPalettes.removeAll();
+		lineOfPalettes2.removeAll();
+		ColorBrewer[] brewer = null;
+		if ("Divergent".equals(state))  		brewer = ColorBrewer.getDivergingColorPalettes(colorBlindSafe);
+		if ("Sequential".equals(state)) 		brewer = ColorBrewer.getSequentialColorPalettes(colorBlindSafe);
+		if ("Qualitative".equals(state)) 	brewer = ColorBrewer.getQualitativeColorPalettes(colorBlindSafe);
+	    
+	    buildPalettes(brewer);
+	    lineOfPalettes.setVisible(false);
+	    lineOfPalettes.setVisible(true);			// TODO REFRESH
     }
 
 
@@ -162,21 +161,83 @@ void buildPalettes(int[] starts)
 	}
 
 }
-    
-    VBox makeColorColumn(int start)
-    {
-    	ClickableBox box = new ClickableBox(false, false);
-		for (int row = 0; row < 5; row++)
+
+void buildPalettes(ColorBrewer[] brewers)
+{
+	int len = brewers.length;
+	if (len < 9)
+	for (ColorBrewer brew : brewers)
+	{
+		Color [] colors = brew.getColorPalette(5);
+		lineOfPalettes.add(makeColorColumn(colors));
+	    lineOfPalettes.add(Box.createRigidArea(new Dimension(8,4)));
+	}
+	else
+	{
+		int i=0;
+		for (; i < len / 2; i++)
 		{
-			Color color = Colors.colorFromIndex(start + row);
-			ColorPane c = new ColorPane(row, 0, color, null);
-			box.add(c);
+			Color [] colors = brewers[i].getColorPalette(5);
+			lineOfPalettes.add(makeColorColumn(colors));
+		    lineOfPalettes.add(Box.createRigidArea(new Dimension(8,4)));
+			
 		}
-		box.setBorder(BorderFactory.createLineBorder(Color.orange, 3));
-    	return box;
- }
+		for (; i < len; i++)
+		{
+			Color [] colors = brewers[i].getColorPalette(5);
+			lineOfPalettes2.add(makeColorColumn(colors));
+		    lineOfPalettes2.add(Box.createRigidArea(new Dimension(8,4)));
+		
+		}
+	
+	}
+}
+
+VBox makeColorColumn(int start)
+{
+	VBox box = new VBox(false, false);
+	for (int row = 0; row < 5; row++)
+	{
+		Color color = Colors.colorFromIndex(start + row);
+		ColorPane c = new ColorPane(row, 0, color, null);
+		box.add(c);
+	}
+	box.setBorder(BorderFactory.createLineBorder(Color.orange, 3));
+	return box;
+}
+
+VBox makeColorColumn(Color[] colors)
+{
+	VBox box = new VBox(false, false);
+	int row = 0;
+	for (Color color : colors)
+	{
+		ColorPane c = new ColorPane(row++, 0, color, null);
+		box.add(c);
+	}
+	box.setBorder(BorderFactory.createLineBorder(Color.orange, 3));
+	return box;
+}
     
     
-    
+ class ClickableBox extends VBox implements MouseListener {
+
+	public ClickableBox(boolean useSpacing, boolean useGlue)
+	{
+		super(useSpacing, useGlue);
+	}
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		System.out.println("Set Selected");
+
+	}
+
+	@Override	public void mousePressed(MouseEvent e) {	}
+	@Override	public void mouseReleased(MouseEvent e) {}
+	@Override	public void mouseEntered(MouseEvent e) {	}
+	@Override	public void mouseExited(MouseEvent e) {	}
+
+}
+
  //   http://colorbrewer2.org
 }

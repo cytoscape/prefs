@@ -80,9 +80,4 @@ public class PrefsBehavior extends AbstractPrefsPanel {
 		   overwriteProperties("cytoscape3.props", attributes);
 		   return attributes;
 	    }	 
-	   
-	   String boolState(JCheckBox ck )
-	   {
-		   return ck.isSelected() ? "true" : "false";
-	   }
 }

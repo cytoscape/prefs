@@ -5,21 +5,21 @@ public enum PPanels {
 	LAYOUTS("Layouts", "\uf133;", "layouts"),
 	GROUPS("Groups", "\uf0c0", "groups"),
 	TABLES("Tables", "\uf0ce", "tables"),
-	LINKS("Links", "\uf08e", "links"),
 	STYLES("Styles", "\uf02e", "styles"),
 	BEHAVIOR("Behavior", "\uf14a", ""),
 	EFFICIENCY("Efficiency", "\uf085", "efficiency"),
 	SECURITY("Security", "\uf023", "security"),
-	APPS("Apps", "\uf009", "apps"),
-	MENUS("Menus", "\uf039", "menus"),
-	LEGENDS("Legends", "\uf1c3", "legends"),
+//	APPS("Apps", "\uf009", "apps"),
+//	MENUS("Menus", "\uf039", "menus"),
+//	LEGENDS("Legends", "\uf1c3", "legends"),
 	COLORS("Colors", "\uf1fb", "colors"),
 	TEXT("Text", "\uf032", "text"),
-	IMAGES("Images", "\uf03e", "images"),
+	LINKS("Links", "\uf08e", "links"),
+//	IMAGES("Images", "\uf03e", "images"),
 	ADVANCED("Advanced", "\uf1b2", "advanced");
 	
 
-	public static int[] rows = new int[] { 5, 5, 5 };
+	public static int[] rowLengths = new int[] { 4, 3, 3 };
 	public static String[] rowNames = new String[]{ "Networks", "Cytoscape", "Output"};
 
 	

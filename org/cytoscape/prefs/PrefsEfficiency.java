@@ -6,7 +6,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
 
-import org.lib.HBox;
+import org.cytoscape.prefs.lib.HBox;
 
 public class PrefsEfficiency extends AbstractPrefsPanel {
 

@@ -32,7 +32,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package org.cytoscape.prefs;
+package org.cytoscape.prefs.lib;
 
 import java.awt.Color;
 import java.awt.Component;

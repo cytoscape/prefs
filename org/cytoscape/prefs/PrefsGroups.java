@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.lib.HBox;
+import org.cytoscape.prefs.lib.HBox;
 
 //line.add(Box.createHorizontalGlue()); 
 //container.add(Box.createRigidArea(new Dimension(5,0)));

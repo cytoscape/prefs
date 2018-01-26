@@ -11,12 +11,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
-import org.lib.BoxComponent;
-import org.lib.ColorMenuButton;
-import org.lib.GuiFactory;
-import org.lib.HBox;
-import org.lib.SElement;
-import org.lib.VBox;
+import org.cytoscape.prefs.lib.BoxComponent;
+import org.cytoscape.prefs.lib.ColorMenuButton;
+import org.cytoscape.prefs.lib.HBox;
+import org.cytoscape.prefs.lib.VBox;
 
 
 public class PrefsTables extends AbstractPrefsPanel
@@ -92,7 +90,7 @@ public class PrefsTables extends AbstractPrefsPanel
 //		page.add(col3);
 		col1.add(makeColumnList());
 		col2.add(new VBox( true, true, makeRightSide(), new JLabel("Import Profiles"), makeImportList()));
-		GuiFactory.setSizes(page, new Dimension(550,350));
+		setSizes(page, new Dimension(550,350));
 		add(page);
     }
 
@@ -163,11 +161,11 @@ public class PrefsTables extends AbstractPrefsPanel
 	    	return map;
    
 	    }
-
-	public static SElement getDefaults()
-	{
-		SElement e = new SElement("Tables");
-		return e;
-		
-	}
+//
+//	public static SElement getDefaults()
+//	{
+//		SElement e = new SElement("Tables");
+//		return e;
+//		
+//	}
 }

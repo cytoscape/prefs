@@ -1,14 +1,12 @@
 package org.cytoscape.prefs;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
 
-import org.lib.FileUtil;
-import org.lib.ProxyConfig;
+import org.cytoscape.prefs.lib.ProxyConfig;
 
 public class Cy3PrefsAPI extends Prefs {
 
@@ -40,7 +38,7 @@ public class Cy3PrefsAPI extends Prefs {
 		File cytoDir = new File(startPath);
 		if (cytoDir.exists())
 		{
-			List<File> propFiles = FileUtil.collectFiles(startPath, ".props");
+			List<File> propFiles = AbstractPrefsPanel.collectFiles(startPath, ".props");
 			for (File f : propFiles)
 			{
 				String namespace = f.getName();

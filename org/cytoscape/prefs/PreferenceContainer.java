@@ -39,46 +39,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.PanelUI;
 import javax.swing.plaf.SeparatorUI;
 
-import org.lib.DialogFooter;
-import org.lib.DictKey;
-import org.lib.GuiFactory;
-import org.lib.Intl;
-import org.lib.VBox;
-import org.lib.WindowDragger;
+import org.cytoscape.prefs.lib.AntiAliasedPanel;
+import org.cytoscape.prefs.lib.DialogFooter;
+import org.cytoscape.prefs.lib.FontAwesomeIcon;
+import org.cytoscape.prefs.lib.HBox;
+import org.cytoscape.prefs.lib.VBox;
 
-//import com.bric.swing.DialogFooter;
-//import com.treestar.lib.dialogs.SDialogs;
-//import com.treestar.lib.gui.panels.FJLabel;
-//import com.treestar.lib.i18n.Intl;
-//import com.treestar.lib.net.Help;
-
-/** A panel for managing several different preference components.
- * Each preference panel is associated with a single button.
- * This is modeled after OS X's preference system.
- * <P>This component can be used with 1 row of buttons, in which case
- * it behaves similar to a JTabbedPane (where each tab is actually
- * a toggle button).  Ken Orr has put together a great JTabbedPaneUI
- * based on this concept: http://code.google.com/p/macwidgets/ .
- * <P>However this component also supports multiple rows of buttons,
- * if you have several different preference components to manage.
- * Each row has a name, and every element in a row should be vaguely
- * related to that name.  When this panel shows multiple rows, the
- * top of the panel has a browser-like header with a back/forward
- * button, and a "Show All" button (similar to a "Home" button).
- * <P>There are pros and cos to whether this widget should be displayed
- * in a dialog vs a frame.  On the one hand, to get a really Mac-like
- * experience (which is the goal of this imitation), you should use a
- * Frame.  Also a Frame is the best way to get the brushed-metal
- * look (although in 10.5 the look in no way resembles brushed-metal, that's
- * just its name).  However, dialogs are easier.  Dialogs can be modal.
- * With a frame on a Mac, you need to provide some sort of JMenuBar to
- * give a native look-and-feel experience.  And a frame requires your
- * preferences to all give live feedback: with a dialog you can wait
- * until the modal dialog is dismissed.  Did I just make excuses for lazy
- * programmers?  Hard to say.  But I left the option in this class for you
- * to create with a dialog or frame for it.
- * 
- */
 public class PreferenceContainer extends JPanel  implements ActionListener//implements PrefsStringDefs 
 {
 	public PreferenceContainer() {		 this("");		}
@@ -89,32 +55,37 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	public PreferenceContainer(String defaultTitle) 
 	{
 		super();
-		WindowDragger g = new WindowDragger(header);
+//		WindowDragger g = new WindowDragger(header);
 		this.defaultTitle = defaultTitle;
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		homeButton.addActionListener(e -> { showHome(); });	
-		GuiFactory.setSizes(homeButton, new Dimension(36, 36));
+		AntiAliasedPanel.setSizes(homeButton, new Dimension(36, 36));
 		Icon home = new FontAwesomeIcon(homeIcon.charAt(0), 18);
 		homeButton.setVisible(true);
 		homeButton.setIcon(home);
 
 		leftButton.addActionListener(e -> { showPrevious(); });	
-		GuiFactory.setSizes(leftButton, new Dimension(36,36));
+		AntiAliasedPanel.setSizes(leftButton, new Dimension(36,36));
 		Icon lft = new FontAwesomeIcon(leftArrow.charAt(0), 14);
 		leftButton.setVisible(true);
 		leftButton.setIcon(lft);
 
 		rightButton.addActionListener(e -> { showNext(); });	
-		GuiFactory.setSizes(rightButton, new Dimension(36,36));
+		AntiAliasedPanel.setSizes(rightButton, new Dimension(36,36));
 		rightButton.setVisible(true);
 		Icon rt = new FontAwesomeIcon(rtArrow.charAt(0), 14);
 		rightButton.setIcon(rt);
 
 		JLabel spacer = new JLabel("");
-		GuiFactory.setSizes(spacer, new Dimension(60,24));
+		AntiAliasedPanel.setSizes(spacer, new Dimension(60,24));
 		header.add(Box.createHorizontalGlue());
 		
-		repack();
+		textModeButton.addActionListener(e -> { showTextPage(); });	
+		AntiAliasedPanel.setSizes(textModeButton, new Dimension(90,28));
+		textModeButton.setFont(new Font("SansSerif", 0, 10));
+		textModeButton.setVisible(true);
+
+//		repack();
 		
 		if(isMac) {
 			header.setUI(new GradientHeaderUI());
@@ -130,13 +101,12 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JButton button = (JButton)e.getSource();
-			show(button);
-			adjust();
+			show( button.getText());
 		}
 	};
 
-	private JButton selectedButton;
-	public String getSelectedPanelName() { return selectedButton == null ? "" : selectedButton.getText();		}
+//	private JButton selectedButton;
+//	public String getSelectedPanelName() { return selectedButton == null ? "" : selectedButton.getText();		}
 	private final JSeparator separator = new JSeparator();
 //	private final FadingPanel contents = new FadingPanel(new GridBagLayout());
 	protected final JPanel contentsPanel = new JPanel(new CardLayout());
@@ -148,6 +118,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	final protected JButton leftButton = new JButton("");
 	final protected JButton rightButton = new JButton("");
 	final protected JButton homeButton = new JButton("");
+	final protected JButton textModeButton = new JButton("Advanced");
 	public JButton getHomeButton() {  return homeButton; }
 
 	private String defaultTitle = "Preferences";
@@ -155,20 +126,23 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	public void HomeActionPerformed() {		showHome();			adjust();	}	
 	public void NextActionPerformed() {		showNext();			adjust(); }
 	public void PrevActionPerformed() {		showPrevious();		adjust(); }
-	
-	private void adjustHome()
-	{
-		leftButton.setEnabled(false);	
-		rightButton.setEnabled(false);		
-		homeButton.setEnabled(false);		
-	}
+
 	private void adjust()
 	{
 //		int idx = getSelectedPanelIndex();
-		String selectedPanel = getSelectedPanelName();
-		leftButton.setEnabled(!"home".equals(selectedPanel));	
-		rightButton.setEnabled(!"home".equals(selectedPanel));		
+		String selectedPanel = getTopCardName();
+		boolean atHome = "home".equals(selectedPanel);
+		leftButton.setEnabled(!atHome);	
+		boolean enableNext = true;
+		if (atHome || "Advanced".equals(selectedPanel))
+			enableNext = false;
+		rightButton.setEnabled(enableNext);		
+		boolean enablePrev = true;
+		if (atHome || "Advanced".equals(selectedPanel))
+			enablePrev = false;
+		leftButton.setEnabled(enablePrev);		
 		homeButton.setEnabled(!"home".equals(selectedPanel));		
+		setDialogTitle();
 	}
 	
 	JDialog dialog;
@@ -181,7 +155,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 		dialog.setVisible(true);
 		return dialog;
 	}
-	JPanel page = new JPanel();
+	VBox page = new VBox();
 
 	
 	private void reset()	
@@ -190,7 +164,6 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 
 		if (reallyResetPrefs)
 		Prefs.getPrefs().reset();
-//		Prefs32bit.setClicked();
 		install();
 	}
 	
@@ -208,6 +181,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 		if ("Help".equals(cmd))  openHelp("cytoscape preferences");
 		else if ("Reset".equals(cmd))  reset();
 		else if ("OK".equals(cmd)) 		savePrefs();
+		else if ("Text Mode".equals(cmd)) 		showTextPage();
 	}
 	public String getTopCardName()
 	{
@@ -220,42 +194,39 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 		return "";
 	}
 	
-	/** Equivalent to clicking the SHOWALL button. */
-	public void showHome() {		show("home");	repack(); adjustHome();}
-	public void showNext() {	CardLayout layout = (CardLayout) contentsPanel.getLayout();
-								layout.next(contentsPanel);
-								repack();
-								setDialogTitle();
-								adjust();
-							}		
-	private void setDialogTitle() {
-		
-		String top = getTopCardName();
-		String title = "Preferences" + ((top == null) ? "" : (": " + top));
-		dialog.setTitle(title);
-	}
-
-	public void showPrevious() {	CardLayout layout = (CardLayout) contentsPanel.getLayout();
-									layout.previous(contentsPanel);
-									repack();
-									setDialogTitle();
-									adjust();
-							}			
-	/** Show the component associated with a particular button. */
-	public void show(JButton button) 
+	public void showHome() {		show("home");	repack(); adjust();}
+	public void showTextPage() 
 	{
-//		if(selectedButton==button)			return;
-		if(null==button)	
+		String cur = getTopCardName();
+		if ("Advanced".equals(cur))
 		{
-			JComponent compone = getSelectedComponent(selectedButton);
-			compone.setVisible(false);
+			show("home");
+			textModeButton.setText("Tabular");
 		}
-
-		selectedButton = button;
-		String txt = (selectedButton == null) ? "" : selectedButton.getText();
-		String title = defaultTitle + (txt == null ? "" : (": " + txt));
-		show(txt);
+		else 
+		{
+			show("Advanced");
+			textModeButton.setText("Graphical");
+		}
+		repack(); 
 	}
+	
+	public void showNext() 
+	{	CardLayout layout = (CardLayout) contentsPanel.getLayout();
+		layout.next(contentsPanel);
+		repack();
+		adjust();
+							
+	}		
+
+	public void showPrevious() {	
+		CardLayout layout = (CardLayout) contentsPanel.getLayout();
+		layout.previous(contentsPanel);
+		repack();
+		adjust();
+	}			
+
+
 	void show(String txt)
 	{
 		if (txt != null)//  && compone != null
@@ -270,9 +241,13 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			}
 			catch (ClassCastException e) {}
 		}
+		String title = defaultTitle + (txt == null ? "" : (": " + txt));
 		repack(); 
+		textModeButton.setText(txt.equals("Advanced") ? "Graphical" : "Tabular");
+		adjust();
 	}
 		
+	//---------------------------------------------------------------------------
 	/** Add a row of buttons to this PreferencePanel.
 	 * Each button corresponds to the component of the same index.
 	 * @param buttons
@@ -281,7 +256,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	 */
 	public void addButtonRow(JButton[] buttons, JComponent[] components, String title) 
 	{
-		if(rows.size()==1) 			selectedButton = null;
+//		if(rows.size()==1) 			selectedButton = null;
 		Row newRow = new Row(buttons, components, title);
 		rows.add(newRow);
 		
@@ -293,7 +268,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			row.removeAll();
 
 			row.setBackground((a%2==0) ? color1 : color2);		// isEven
-			GuiFactory.setSizes(row.label, new Dimension(90,23));
+			AntiAliasedPanel.setSizes(row.label, new Dimension(90,23));
 			VBox padding = new VBox(true, true, row.label);
 			padding.setOpaque(false);
 //			row.add(Box.createHorizontalStrut(10));
@@ -329,6 +304,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	private final  Color color2 = new Color(225,225,225);
 
 //	private final Dimension maxContentSize = new Dimension(500,500);
+	//---------------------------------------------------------------------------
 	
 	class Row extends JPanel 
 	{
@@ -348,9 +324,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			if(isMac) {
 				setUI(new GradientHeaderUI());
 			}
-			GuiFactory.setSizes(this, new Dimension((int) Cy3PreferencesRoot.WINDOW_WIDTH, (int) Cy3PreferencesRoot.ROW_HEIGHT));
-//			if(inComponents.length!=inButtons.length)				we always send 5 buttons, but a variable number of components
-//				throw new IllegalArgumentException("the number of buttons ("+inButtons.length+") must equal the number of components ("+components.length+")");
+			AntiAliasedPanel.setSizes(this, new Dimension((int) Cy3PreferencesRoot.WINDOW_WIDTH, (int) Cy3PreferencesRoot.ROW_HEIGHT));
 			buttons = new JButton[inButtons.length];
 			
 			System.arraycopy(inButtons,0,buttons,0,buttons.length);
@@ -358,7 +332,7 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			setOpaque(false);
 			
 			if(title!=null)
-				label.setText(Intl.lookup(title));
+				label.setText(title);
 			
 			label.setFont(new Font(Font.SERIF, 0, 12));			//label.getFont().deriveFont(Font.BOLD)
 			label.setMinimumSize(new Dimension(90,21));
@@ -370,15 +344,22 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			{
 				if(buttons[a]==null) continue;
 				buttons[a].setOpaque(false);
-				GuiFactory.setSizes(buttons[a], new Dimension(80, 80));
+				AntiAliasedPanel.setSizes(buttons[a], new Dimension(80, 80));
 				buttons[a].setBackground(Color.orange);
 				buttons[a].addActionListener(buttonListener);
 				add(buttons[a]);
 			}
-			WindowDragger g = new WindowDragger(this);
+//			WindowDragger g = new WindowDragger(this);
 		}
 	}
 	//-------------------------------------------------------------------------------------------------
+	private void setDialogTitle()
+	{
+		String top = getTopCardName();
+		String title = "Preferences" + ((top == null) ? "" : (": " + top));
+		dialog.setTitle(title);
+	}
+
 	/** Creates a modal dialog displaying this PreferencePanel. */
 	public JDialog createDialog(Frame parent,String name) { 
 		JDialog d = new JDialog(parent,name,true);
@@ -390,9 +371,8 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 		}
 		d.getContentPane().setLayout(new BoxLayout(d.getContentPane(), BoxLayout.PAGE_AXIS));
 		d.getContentPane().add(this);
-		d.setResizable(false);
+		d.setResizable(true);			// RESIZABLE
 		d.getContentPane().add(page);
-		page.setLayout(new BoxLayout(page, BoxLayout.PAGE_AXIS));
 		page.add(header);
 		page.add(contentsPanel);
 //		contents.setBorder(BorderFactory.createLineBorder(Color.blue));
@@ -429,16 +409,17 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 	   	return f;
 	}
 
-	private JPanel header = makeDlogHeader();  
+	private HBox header = makeDlogHeader();  
 
-	private JPanel makeDlogHeader()
+	private HBox makeDlogHeader()
 	{
-	   	header = new JPanel();
-	   	header.setLayout(new BoxLayout(header, BoxLayout.LINE_AXIS));
+	   	header = new HBox(true, false);
 	   	header.add(leftButton); 
 	   	header.add(homeButton); 
 	   	header.add(rightButton); 
 	   	header.add(Box.createHorizontalGlue()); 
+	   	header.add(textModeButton); 
+//	   	header.setBorder(BorderFactory.createLineBorder(Color.red));
 	   	return header;
 	}
 
@@ -472,11 +453,11 @@ public class PreferenceContainer extends JPanel  implements ActionListener//impl
 			w.dispose();
 		}
 	};
-	public JComponent getSelectedComponent(JButton b) {
-		return b;
-	}
+//	public JComponent getSelectedComponent(JButton b) {
+//		return b;
+//	}
 }
-
+//---------------------------------------------------------------------------
 class HairSeparatorUI extends SeparatorUI {
 	@Override	public Dimension getMaximumSize(JComponent c) {		return getPreferredSize(c);	}
 

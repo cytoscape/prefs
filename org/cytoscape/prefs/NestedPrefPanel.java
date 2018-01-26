@@ -1,8 +1,11 @@
 package org.cytoscape.prefs;
 
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
-import org.lib.VBox;
+import org.cytoscape.prefs.lib.VBox;
 
 public class NestedPrefPanel extends AbstractPrefsPanel {
 
@@ -12,7 +15,7 @@ public class NestedPrefPanel extends AbstractPrefsPanel {
 		VBox box = new VBox(true, true, contents);
 		box.setBorder(null);
 		add(box);
-//		setBorder(BorderFactory.createLineBorder(Color.cyan));	
+		setBorder(BorderFactory.createLineBorder(Color.cyan));	
 //		contents.setBorder(BorderFactory.createLineBorder(Color.magenta));	
 	}
 	public String toString()	{ return namespace;	}

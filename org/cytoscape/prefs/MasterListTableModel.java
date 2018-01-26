@@ -14,7 +14,7 @@ public class MasterListTableModel implements TableModel
 	public void addRecord(String lay)	{ 	recordList.add(lay); }
 	@Override	public int getRowCount() {		return recordList.size();	}
 	@Override	public int getColumnCount() {		return 1;	}
-	@Override	public String getColumnName(int columnIndex) {		return "Layouts";	}
+	@Override	public String getColumnName(int columnIndex) {		return "";	}
 	@Override	public Class<?> getColumnClass(int columnIndex) {		return String.class;	}
 	@Override	public boolean isCellEditable(int rowIndex, int columnIndex) {		return false;	}
 

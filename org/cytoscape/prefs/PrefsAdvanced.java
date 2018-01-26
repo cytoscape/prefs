@@ -1,18 +1,15 @@
 package org.cytoscape.prefs;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
-import org.lib.AttrVal;
-import org.lib.NamespaceKeyValueTable;
+import org.cytoscape.prefs.lib.NamespaceKeyValueTable;
+import org.cytoscape.prefs.lib.VBox;
 
 public class PrefsAdvanced extends AbstractPrefsPanel {
 
@@ -23,7 +20,7 @@ public class PrefsAdvanced extends AbstractPrefsPanel {
     @Override public void initUI()
     {
         super.initUI();
-		Box page = Box.createVerticalBox();
+        VBox page = new VBox(true, true);
 		add(page);   
  	    page.add(new JLabel("Namespace Attribute Value View"));
 	    page.add(new JLabel(""));
@@ -39,7 +36,7 @@ public class PrefsAdvanced extends AbstractPrefsPanel {
 		table = new NamespaceKeyValueTable();
 		TableColumn col = table.getColumnModel().getColumn(table.getNColumns()-1);
 		col.setPreferredWidth(260);
-		table.setPreferredScrollableViewportSize(new Dimension(500, 270));
+		table.setPreferredScrollableViewportSize(dims);
 		
 		table.setFillsViewportHeight(true);
 		JScrollPane scroller = new JScrollPane(table);

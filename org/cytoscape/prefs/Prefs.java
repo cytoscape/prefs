@@ -1,18 +1,13 @@
 package org.cytoscape.prefs;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JComboBox;
 
-import org.lib.ProxyConfig;
-import org.lib.SElement;
-import org.lib.StringUtil;
+import org.cytoscape.prefs.lib.ProxyConfig;
+import org.cytoscape.prefs.lib.StringUtil;
 
 abstract public class Prefs extends HashMap<String, String> //implements PrefsStringDefs
 {
@@ -81,7 +76,7 @@ abstract public class Prefs extends HashMap<String, String> //implements PrefsSt
 	abstract public File getPrefsFile();
 	abstract public boolean canSetPrefs();
 	
-	public SElement getDefaultPageSection(boolean isLayout, String defltElementName)	{		return new SElement(defltElementName);	}
+//	public SElement getDefaultPageSection(boolean isLayout, String defltElementName)	{		return new SElement(defltElementName);	}
 	//----------------------------------------------------------------------------------------------------
 	public void saveRecentDirectory(File file)
 	{

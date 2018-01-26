@@ -1,18 +1,17 @@
 package org.cytoscape.prefs;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.lib.HBox;
-import org.lib.VBox;
+import org.cytoscape.prefs.lib.HBox;
+import org.cytoscape.prefs.lib.VBox;
 
+@SuppressWarnings("serial")
 public class PrefsLayouts extends MasterDetailPanel
 {
 
@@ -28,7 +27,7 @@ public class PrefsLayouts extends MasterDetailPanel
     {
         super.initUI();
         makeLayoutList();
-        splitter.setDividerLocation(0.3);
+        splitter.setDividerLocation(0.5);
     }
     String base = "http://manual.cytoscape.org/en/stable/Navigation_and_Layout.html";
 
@@ -38,36 +37,36 @@ public class PrefsLayouts extends MasterDetailPanel
 
 private void makeLayoutList()
     {
-    	addLayout("Grid", "grid", makeGridLayoutEditor(), "#grid-layout");
-    	addLayout("Circular", "circular", makeCirleLayoutEditor(), "#yfiles-circular-layout");
-    	addLayout("Attribute Circle", "attribute-circle", makeAttributeCirleLayoutEditor(), "#attribute-circle-layout");
-    	addLayout("Degree Sorted Circle", "degree-circle", makeDegreeSortedCircleLayoutEditor());
-    	addLayout("Group Attributes", "attributes-layout" , makeGroupLayoutEditor(), "#group-attributes-layout");
-    	addLayout("Stacked Node", "stacked-node-layout",makeStackedNodeLayoutEditor());
-    	addLayout("Hierarchical", "hierarchical",makeHierarchicalLayoutEditor(), "#yfiles-hierarchical-layout");
-    	addLayout("Compound Spring Embedder", "cose", makeCoSELayoutEditor(), "#compound-spring-embedder-layout");
-    	addLayout("Inverted Self Organizing Map", "isom", makeInvertedSOMLayoutEditor());
-       	addLayout("Edge-weighted Spring-Embedded", "kamada-kawai", makeEdgeWeightedSpringEmbeddedLayoutEditor(), "#edge-weighted-spring-embedded-layout");
-       	addLayout("Edge-weighted Force-Directed", "fruchterman-rheingold", makeEdgeWeightedForceLayoutEditor());
-    	addLayout("Prefuse Force Directed", "force-directed", makePrefuseForceLayoutEditor(), "#prefuse-force-directed-layout");
-    	addLayout("Prefuse Force Directed OpenCL", "force-directed-cl" , makePrefuseForceOpenCLLayoutEditor(), "#prefuse-force-directed-layout");
+	    	addLayout("Grid", "grid", makeGridLayoutEditor(), "#grid-layout");
+	    	addLayout("Circular", "circular", makeCirleLayoutEditor(), "#yfiles-circular-layout");
+	    	addLayout("Attribute Circle", "attribute-circle", makeAttributeCirleLayoutEditor(), "#attribute-circle-layout");
+	    	addLayout("Degree Sorted Circle", "degree-circle", makeDegreeSortedCircleLayoutEditor());
+	    	addLayout("Group Attributes", "attributes-layout" , makeGroupLayoutEditor(), "#group-attributes-layout");
+	    	addLayout("Stacked Node", "stacked-node-layout",makeStackedNodeLayoutEditor());
+	    	addLayout("Hierarchical", "hierarchical",makeHierarchicalLayoutEditor(), "#yfiles-hierarchical-layout");
+	    	addLayout("Compound Spring Embedder", "cose", makeCoSELayoutEditor(), "#compound-spring-embedder-layout");
+	    	addLayout("Inverted Self Organizing Map", "isom", makeInvertedSOMLayoutEditor());
+	    addLayout("Edge-weighted Spring-Embedded", "kamada-kawai", makeEdgeWeightedSpringEmbeddedLayoutEditor(), "#edge-weighted-spring-embedded-layout");
+	    addLayout("Edge-weighted Force-Directed", "fruchterman-rheingold", makeEdgeWeightedForceLayoutEditor());
+	    	addLayout("Prefuse Force Directed", "force-directed", makePrefuseForceLayoutEditor(), "#prefuse-force-directed-layout");
+	    	addLayout("Prefuse Force Directed OpenCL", "force-directed-cl" , makePrefuseForceOpenCLLayoutEditor(), "#prefuse-force-directed-layout");
    }
 
     private void addLayout(String s, String namespace, NestedPrefPanel editor)
     {
-    	addLayout(s, namespace, editor, null);
+    		addLayout(s, namespace, editor, null);
     }
     
     
     private void addLayout(String layoutName, String namespace, NestedPrefPanel editor, String url)
     {
-    	masterListModel.addRecord(layoutName);			// add the layout to the model
-    	editor.setName(layoutName);
-    	detailPanel.add(layoutName, editor);			// put the card in the deck
-    	map.put(layoutName, editor);					// be able to recall the editor
-    	namespaceMap.put(layoutName, namespace);		// be able to get the ns from layout name
-    	if (url != null)
-    		editor.add(makeExampleLink(url));
+	    	masterListModel.addRecord(layoutName);			// add the layout to the model
+	    	editor.setName(layoutName);
+	    	detailPanel.add(layoutName, editor);			// put the card in the deck
+	    	map.put(layoutName, editor);					// be able to recall the editor
+	    	namespaceMap.put(layoutName, namespace);		// be able to get the ns from layout name
+	    	if (url != null)
+	    		editor.add(makeExampleLink(url));
     }
     static Font FONT = new Font("Dialog", Font.ITALIC, 9);
    
@@ -91,7 +90,9 @@ private void makeLayoutList()
     	JLabel label = new JLabel("Link");
     	label.setFont(FONT);
     	label.setForeground(Color.BLUE);
-//    	label.addMouseListener(ev -> { openUrl(fullUrl);	});
+//    	label.addMouseListener(new MouseListener { 
+//    	    public void mouseClicked(MouseEvent e) {  openUrl(fullUrl);	};
+//    	}
     	return line;
     }
     

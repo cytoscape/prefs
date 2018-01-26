@@ -1,17 +1,17 @@
 package org.cytoscape.prefs;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
-import org.lib.NamespaceKeyValueTable;
+import org.cytoscape.prefs.lib.NamespaceKeyValueTable;
 
 public class PrefsLinks extends AbstractPrefsPanel {
 
@@ -26,14 +26,14 @@ public class PrefsLinks extends AbstractPrefsPanel {
 	    page.add(new JLabel("Links"));
 	    page.add(makeTable());
 		add(page);   
-		setBorder(new EmptyBorder(5, 0, 0, 30));
+//		setBorder(new EmptyBorder(5, 0, 0, 30));
 	}
     
     @Override public void install(Map<String, String> p)
     {
-    	super.install(p);
-    	Map<String, String> data = getPropertyMap("linkout.props");
-    	table.install(data);
+    		super.install(p);
+    		Map<String, String> data = getPropertyMap("linkout.props");
+    		table.install(data);
 		TableColumn col = table.getColumnModel().getColumn(2);
 		col.setPreferredWidth(260);
     }
@@ -50,10 +50,17 @@ public class PrefsLinks extends AbstractPrefsPanel {
 	
     private Component makeTable() {
 		table = new NamespaceKeyValueTable();
-		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
-		JScrollPane scroller = new JScrollPane(table);
-		return scroller;
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+//		table.setPreferredScrollableViewportSize(dims);
+		JPanel contentPane = new JPanel( new BorderLayout() );
+		JScrollPane scroller = new JScrollPane( table  );		
+		contentPane.add(scroller, BorderLayout.CENTER );
+//		scroller.setMaximumSize(dims);
+		scroller.setViewportView(table);
+		scroller.setPreferredSize(dims);
+//		scroller.setMaximumSize(new Dimension(2000, 1500));
+		return contentPane;
 	}
 
 }
