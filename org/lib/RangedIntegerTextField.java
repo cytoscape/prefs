@@ -19,12 +19,6 @@ public class RangedIntegerTextField extends RangedDoubleTextField
 		super(min, max, new IntegerFormatter());
 	}
 	
-	public RangedIntegerTextField(int val, int min, int max)
-	{   
-		super(min, max, new IntegerFormatter());
-		setValue(val);
-	}
-	
 	public RangedIntegerTextField(int min, int max, Dimension size)
 	{
 		this(min, max);

@@ -9,8 +9,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
-import org.lib.HBox;
-
 public class PrefsBehavior extends AbstractPrefsPanel {
 
 	protected PrefsBehavior(Cy3PreferencesRoot dlog) {
@@ -20,30 +18,17 @@ public class PrefsBehavior extends AbstractPrefsPanel {
     {
         super.initUI();
         
-		Box col1 = Box.createVerticalBox();
-		col1.add(Box.createRigidArea(new Dimension(20, 40)));
+		Box page = Box.createVerticalBox();
+		page.add(Box.createRigidArea(new Dimension(20, 40)));
 		for (int i=0; i< displayNames.length; i++)
 		{
 			String prompt =  displayNames[i];
 			String shortened = prompt.replaceAll(" ", "");
 			String fld  = shortened.substring(0, 1).toLowerCase() + shortened.substring(1);
-			col1.add(makeCheckBoxLine(prompt, fld,  tips[i]));
+			page.add(makeCheckBoxLine(prompt, fld,  tips[i]));
 		}
-		col1.add(Box.createVerticalGlue());
-		
-		Box col2 = Box.createVerticalBox();
-		col2.add(Box.createRigidArea(new Dimension(20, 40)));
-		for (int i=0; i< futureFeatures.length; i++)
-		{
-			String prompt =  futureFeatures[i];
-			if (prompt.trim().isEmpty()) continue;
-			String shortened = prompt.replaceAll(" ", "");
-			String fld  = shortened.substring(0, 1).toLowerCase() + shortened.substring(1);
-			col2.add(makeCheckBoxLine(prompt, fld,  tips[i]));
-		}
-		col2.add(Box.createVerticalGlue());
-		
-		add(new HBox(true, true, Box.createRigidArea(new Dimension(20, 40)),col1, col2));   
+		page.add(Box.createVerticalGlue());
+		add(page);   
 	}
 	
 	
@@ -78,19 +63,10 @@ public class PrefsBehavior extends AbstractPrefsPanel {
 	    }
 	   
 	   @Override public Map<String,String> extract()
-	   {
-		    Map<String,String> map = extractFrom(displayNames);
-		    map.putAll(extractFrom(futureFeatures));
-		    return map;
-	   }
-	   
-	   
-	   private  Map<String,String> extractFrom(String[] names)
-	   {
+	    {
 		   Map<String,String> attributes = new HashMap<String,String>();
-		   for (String fld : names)
+		   for (String fld : displayNames)
 		   {
-			   if (fld.isEmpty()) continue;
 			   String shortened = fld.replaceAll(" ", "");
 			   String squished = shortened.substring(0, 1).toLowerCase() + shortened.substring(1);
 				JComponent comp = components.get("cytoscape3." + squished);
@@ -101,23 +77,9 @@ public class PrefsBehavior extends AbstractPrefsPanel {
 				   attributes.put(squished, boolState(ck));
 			   }
 		   }
-//		   overwriteProperties("cytoscape3.props", attributes);
+		   overwriteProperties("cytoscape3.props", attributes);
 		   return attributes;
 	    }	 
-		
-	   
-	   
-	   
-		String[] futureFeatures = { "Classic modifier key selection", 
-				"Click in white space deselects all",  
-				"",  
-				"",  "",  ""  };
-			
-		String[] futureFeatureTips = { "", "",  "",  
-								"",  "",  ""  };
-
-	   
-	   
 	   
 	   String boolState(JCheckBox ck )
 	   {

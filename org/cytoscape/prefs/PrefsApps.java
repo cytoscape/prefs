@@ -1,35 +1,26 @@
 package org.cytoscape.prefs;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
 
 import org.lib.HBox;
+import org.lib.VBox;
+
+import ch.randelshofer.quaqua.util.SequentialDispatcher;
 
 public class PrefsApps extends MasterDetailPanel {
-
-	private static final long serialVersionUID = 1L;
-
 
 	protected PrefsApps(Cy3PreferencesRoot dlog) {
 		super(dlog, "apps");
 		setBorder(BorderFactory.createEmptyBorder(12,12,12,12));
 	}
-    protected double getListWidth() 			{			return 0.15;}
-	protected boolean getListOnLeft() 		{			return false;	}
-    String introTxt = "Applications can be installed and removed here";
-    String introTxt2 = "Each installed app can have a JPanel installed here or use tunables.";
-
-
-	@Override public void initUI()
+     @Override public void initUI()
     {
-		add(new HBox(true, true, new JLabel(introTxt)));
-		add(new HBox(true, true, new JLabel(introTxt2)));
         super.initUI();
         makeAppList();
         splitter.setDividerLocation(0.9);
@@ -41,11 +32,15 @@ public class PrefsApps extends MasterDetailPanel {
     	addApp("ID Mapper", "idmapper", makeIDMapperEditor(), "#idmapper");
     	addApp("CyBrowser", "Browser", makeBrowserEditor(), "#Browser");
     	addApp("WikiPathways", "wikipathways", makeWPEditor(), "#wikipathways");
-    	addApp("GeneMania", "genemania", makeBrowserEditor(), "#genemania");
-    	addApp("String", "string", makeIDMapperEditor(), "#string");
-    	addApp("KEGG", "kegg", makeBrowserEditor(), "#kegg");
    }
 
+    protected double getListWidth() 			{			return 0.15;}
+	protected boolean getListOnLeft() 		{			return false;	}
+   private void addLayout(String s, String namespace, NestedPrefPanel editor)
+    {
+    	addApp(s, namespace, editor, null);
+    }
+    
     
     private void addApp(String layoutName, String namespace, NestedPrefPanel editor, String url)
     {
@@ -58,26 +53,24 @@ public class PrefsApps extends MasterDetailPanel {
     		editor.add(makeExampleLink(url));
     }
     static Font FONT = new Font("Dialog", Font.ITALIC, 9);
-   //------------------------------------------------------
-    @Override public Map<String, String> extract()
+   
+    private void extractVlid()
     {
-    	Map<String, String> props = new HashMap<String, String>();
-    	int nRows = masterListModel.getRowCount();
+        int nRows = masterListModel.getRowCount();
         for (int i=0; i<nRows; i++)
         {
         	String layoutName = masterListModel.getLayout(i);
-//        	String nameSpace = namespaceMap.get(layoutName);
+        	String nameSpace = namespaceMap.get(layoutName);
         	NestedPrefPanel editor = map.get(layoutName);
-        	props.putAll(editor.extract());
-        }
-        return props;
+//        	Map<String, String> props = editor.extract();
+//        	writeLayoutPropFile(props);
+          }
 
     }
-    //------------------------------------------------------
     HBox makeExampleLink(String url)
     {
     	HBox line = new HBox();
-//    	String fullUrl = base + url;
+    	String fullUrl = base + url;
     	JLabel label = new JLabel("Link");
     	label.setFont(FONT);
     	label.setForeground(Color.BLUE);
@@ -85,7 +78,6 @@ public class PrefsApps extends MasterDetailPanel {
     	return line;
     }
     
-    //------------------------------------------------------
     private NestedPrefPanel makeIDMapperEditor()
     {
 		Box page = Box.createVerticalBox();
@@ -98,7 +90,6 @@ public class PrefsApps extends MasterDetailPanel {
 		return panel;
 	}
     
-    //------------------------------------------------------
     private NestedPrefPanel makeWPEditor()
     {
 		Box page = Box.createVerticalBox();
@@ -111,13 +102,12 @@ public class PrefsApps extends MasterDetailPanel {
 		return panel;
 	}
     
-    //------------------------------------------------------
     private NestedPrefPanel makeBrowserEditor()
     {
 		Box page = Box.createVerticalBox();
 		NestedPrefPanel panel =  new NestedPrefPanel("attribute-circle", page, root);
 	  	page.add(panel.makeLabeledField("Edge Attribute", "edgeAttribute", ""));
-	  	page.add(panel.makeNumberField("Spacing", "spacing", 1, 1, 100));
+	  	page.add(panel.makeNumberField("sdfsd Size", "spacing", 1, 1, 100));
 	  	page.add(Box.createRigidArea(lineSpace));
 	  	page.add(panel.makeCheckBoxLine("Show Button Bar", "showButtons", "tip"));
 	  	page.add(panel.makeCheckBoxLine("Show Search Bar", "showSearchBar", "tip"));

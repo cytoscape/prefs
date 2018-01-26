@@ -25,7 +25,6 @@ import org.lib.BoxComponent;
 import org.lib.BoxSubPanel;
 import org.lib.ColorMenuButton;
 import org.lib.GuiFactory;
-import org.lib.HBox;
 import org.lib.ParseUtil;
 import org.lib.SElement;
 import org.lib.TextTraits;
@@ -69,7 +68,7 @@ public class PrefsText extends AbstractPrefsPanel {
 	
 	private boolean fInitializingUI;
 	private boolean fInitialized = false;
-	String introTxt = "Default text attributes are set for graph elements, but can be overriden by mapping.  ";
+
 	@Override public void initUI()
 	{
 		fInitializingUI = true;
@@ -78,17 +77,12 @@ public class PrefsText extends AbstractPrefsPanel {
 		Box line = Box.createHorizontalBox();
 		line.add(getFunctionPanel());
 		line.add(initTextSettingsPanel());
-		line.add(Box.createHorizontalGlue());
 		
-		HBox intro = new HBox(true, true, new JLabel(introTxt));
+		
 		Box page = Box.createVerticalBox();
-		page.add(intro);
-		page.add(Box.createRigidArea(new Dimension(4,12)));
-
 		page.add(line);
 		Box line2 = Box.createHorizontalBox();
 		line2.add(getExampleTextPanel());
-		line2.add(Box.createHorizontalGlue());
 		page.add(line2);
 //		addLeftSpacer();
 //		addRightSpacer();

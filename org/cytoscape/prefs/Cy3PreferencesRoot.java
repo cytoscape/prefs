@@ -71,63 +71,56 @@ public class Cy3PreferencesRoot extends PreferenceContainer implements ActionLis
 	public Cy3PreferencesRoot(PrefsDocument w) 
 	{
 		super("Preferences");
+		InputStream istream = Cy3PreferencesRoot.class.getResourceAsStream("fontawesome-webfont.ttf");
 		try
 		{
-			InputStream istream = Cy3PreferencesRoot.class.getResourceAsStream("fontawesome-webfont.ttf");
 	        Font font = Font.createFont(Font.TRUETYPE_FONT, istream);
-			
-	        initUI();
+	        font = font.deriveFont(Font.PLAIN, 48f);
+			initUI();
 
 			Prefs prefsCopy = Prefs.getPrefs();
 			if (prefsCopy instanceof Cy3PrefsAPI)
 				Cy3PrefsAPI.readProperties();
 			else { System.err.println("Prefs mismatch");  }
 			
+			Dimension buttonSize = new Dimension(100, 25);
+
 			homePanel = new JPanel();
 			homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.PAGE_AXIS));
 //			homePanel.setBorder(BorderFactory.createLineBorder(Color.red));
 			contentsPanel.add(homePanel,  "home");
-			layoutButtons(font);
-			install(Prefs.getPrefs());
+			for(int i = 0; i<PPanels.rows.length; i++) 
+			{
+				int rowLength = PPanels.rows[i];
+				JButton[] buttons = new JButton[rowLength];
+				JComponent[] components = getRowsComponents(i, rowLength);  			
+				for (int j=0; j < rowLength; j++) 
+				{
+					PPanels panel = PPanels.values()[i * 5 + j];
+					char iconName = panel.getIcon().charAt(0);
+					Icon icon = new FontAwesomeIcon(iconName, 28);
+					String name = panel.getDisplayName();
+					buttons[j] = new JButton(name);  //GuiFactory.makeStackButton(name, name, "prefs/" + name, false);		//FJButton.ENABLED_ROLLOVER_DISABLED
+					buttons[j].setSize(buttonSize);
+					buttons[j].setIcon(icon);
+					buttons[j].setToolTipText(panel.getTooltip());
+					buttons[j].addActionListener(buttonListener);
+					int wid = 140; 
+					int hght = 100;   //  icon.getIconHeight() / 2;
+					Dimension dim = new Dimension(wid, hght);
+					GuiFactory.setSizes(buttons[j], dim);
+					buttons[j].setHorizontalTextPosition(SwingConstants.CENTER);
+					buttons[j].setVerticalTextPosition(SwingConstants.BOTTOM);
+					components[j].setName(buttons[j].getText());
+					System.out.println("adding: " + buttons[j].getText() + " -> " + components[j]);
+					contentsPanel.add(components[j], buttons[j].getText());
+				}
+				addButtonRow(buttons, components, PPanels.rowNames[i]);
+			}
 		}
 		catch (Exception e)		{	e.printStackTrace();	}
 		
-	}
-	
-	
-	private void layoutButtons(Font font) 
-	{
-        font = font.deriveFont(Font.PLAIN, 48f);
-		Dimension buttonSize = new Dimension(100, 25);
-		
-		for (int i = 0; i<PPanels.rows.length; i++) 
-		{
-			int rowLength = PPanels.rows[i];
-			JButton[] buttons = new JButton[rowLength];
-			JComponent[] components = getRowsComponents(i, rowLength);  			
-			for (int j=0; j < rowLength; j++) 
-			{
-				PPanels panel = PPanels.values()[i * 5 + j];
-				char iconName = panel.getIcon().charAt(0);
-				Icon icon = new FontAwesomeIcon(iconName, 28);
-				String name = panel.getDisplayName();
-				buttons[j] = new JButton(name);  //GuiFactory.makeStackButton(name, name, "prefs/" + name, false);		//FJButton.ENABLED_ROLLOVER_DISABLED
-				buttons[j].setSize(buttonSize);
-				buttons[j].setIcon(icon);
-				buttons[j].setToolTipText(panel.getTooltip());
-				buttons[j].addActionListener(buttonListener);
-				int wid = 140; 
-				int hght = 100;   //  icon.getIconHeight() / 2;
-				Dimension dim = new Dimension(wid, hght);
-				GuiFactory.setSizes(buttons[j], dim);
-				buttons[j].setHorizontalTextPosition(SwingConstants.CENTER);
-				buttons[j].setVerticalTextPosition(SwingConstants.BOTTOM);
-				components[j].setName(buttons[j].getText());
-				System.out.println("adding: " + buttons[j].getText() + " -> " + components[j]);
-				contentsPanel.add(components[j], buttons[j].getText());
-			}
-			addButtonRow(buttons, components, PPanels.rowNames[i]);
-		}
+		install(Prefs.getPrefs());
 	}
 	//-------------------------------------------------------------------------
 	private final AbstractPrefsPanel[] fPrefs = new AbstractPrefsPanel[NPREFS];

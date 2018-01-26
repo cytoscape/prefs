@@ -28,7 +28,7 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
 
 	protected Border fUnselectedBorder, fSelectedBorder, fActiveBorder;
 //	protected Hashtable<Color, ColorPane> fPanes;
-	protected ColorSwatch fSelected, fCurrent;
+	protected ColorPane fSelected, fCurrent;
 	protected ColorMenuListener fOwner;
 	public void setOwner(ColorMenuListener cml)	{ fOwner = cml;	}
 	static private ColorMenu sColorMenu = new ColorMenu();			// one copy for getInstance() to return	
@@ -44,17 +44,17 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
 		setLayout(new GridLayout(rows, cols));
 		makeColorPanes();
 	}
-	static private ColorSwatch[] panes = null;
+	static private ColorPane[] panes = null;
 
 	private void makeColorPanes()
 	{
 		int i = 0;
-		panes = new ColorSwatch[rows*cols];
+		panes = new ColorPane[rows*cols];
 		for (int r = 0; r < rows; r++)
 			for (int c = 0; c < cols; c++)
 			{
 				Color color = Colors.colorFromIndex(i);
-				panes[i] = new ColorSwatch(r, c, color, this);
+				panes[i] = new ColorPane(r, c, color, this);
 				add(panes[i]);
 				i++;
 			}
@@ -68,7 +68,7 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
 	public void setUseNoFill(boolean use)
 	{
 		if (panes == null) makeColorPanes();
-		ColorSwatch pane0 = panes[0];
+		ColorPane pane0 = panes[0];
 		pane0.setColor(use ? Colors.kUnfilled : Color.white);
 	}
 //----------------------------------------------------------------------------
@@ -77,7 +77,7 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
         if (c == null)            return;
 //		ColorPane pane = fPanes.get(c);
 //		if (pane == null)
-		ColorSwatch	pane = findClosestPane(c);
+		ColorPane	pane = findClosestPane(c);
 		if (fSelected != null)
 			fSelected.setSelected(false);
 		fSelected = fCurrent = pane;
@@ -86,15 +86,15 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
 	
 	//---------------------------------------------------------------------
 	float COLOR_THRESHOLD = 0.00001f;
-	private ColorSwatch findClosestPane(Color c)
+	private ColorPane findClosestPane(Color c)
 	{
 		if (panes == null) makeColorPanes();
 		//For each pane in fPanes, get the color and compute the color distance.
 		float[] targetColors = c.getRGBColorComponents(null);
-		ColorSwatch minPane = null;
+		ColorPane minPane = null;
 		float minDistance = -1;
 		float[] sampleColors = new float[3];
-		for (ColorSwatch currPane : panes)
+		for (ColorPane currPane : panes)
 		{
 			Color color = currPane.getColor();
 			color.getRGBColorComponents(sampleColors);
@@ -128,7 +128,7 @@ public class ColorMenu extends JPopupMenu  implements ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 	{
-		ColorSwatch pn = (ColorSwatch) e.getSource();
+		ColorPane pn = (ColorPane) e.getSource();
 		if (fSelected != null)
 			fSelected.setSelected(false);
 		fSelected = pn;

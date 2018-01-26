@@ -33,14 +33,13 @@ public class PrefsTables extends AbstractPrefsPanel
 
 	
 	//   	private BoxSubPanel fTablePanel; 
-	static String intro = "Table preferences extend support for multiple table views";
+	
 	private void init()
 	{
 //		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		Box panel = Box.createVerticalBox();
 		setBorder(new EmptyBorder(12, 40, 0, 0));
 
-		panel.add(new HBox(true, true, new JLabel(intro)));
 //		BoxSubPanel opts = new BoxSubPanel("Table Options", false);
 //		Box line1 = Box.createHorizontalBox();
 //		line1.add( new JLabel("Destination:"));
@@ -92,9 +91,7 @@ public class PrefsTables extends AbstractPrefsPanel
 //		page.add(Box.createRigidArea(new Dimension(10,20)));
 //		page.add(col3);
 		col1.add(makeColumnList());
-		col2.add(new VBox( true, true, makeRightSide(), 
-				new JLabel("Import Profiles store groups of settings"), 
-				makeImportList()));
+		col2.add(new VBox( true, true, makeRightSide(), new JLabel("Import Profiles"), makeImportList()));
 		GuiFactory.setSizes(page, new Dimension(550,350));
 		add(page);
     }

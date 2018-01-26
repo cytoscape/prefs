@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,13 +23,11 @@ import javax.swing.SwingConstants;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.TitledBorder;
 
-import org.lib.Borders;
 import org.lib.BoxSubPanel;
 import org.lib.FileUtil;
 import org.lib.FontManager;
 import org.lib.GuiFactory;
 import org.lib.HBox;
-import org.lib.RangedIntegerTextField;
 
 abstract public class AbstractPrefsPanel extends BoxSubPanel
 {
@@ -74,8 +70,6 @@ public static List<String> readPropertyFile(String fname) {
 	{
 		return FileUtil.readMap(getPropertyFile(fname));
 	}
-	
-	
 	//---------------------------------------------------------------------------------------------
 	
 	public Map<String, String> getPropertyMap()	{ return root.getPropertyMap();	}
@@ -106,63 +100,25 @@ public static List<String> readPropertyFile(String fname) {
 		JLabel label = new JLabel(s);
 		JLabel spacer = new JLabel("    " );
 		JTextField field = new JTextField(deflt);
-		HBox line = new HBox(true, true, label, spacer, field);
+		HBox line = new HBox();
 		components.put(namespace + "." + propertyName, field);
-		setSizes(field, 320,30);
+		line.add(label, spacer, field);
+		setSizes(field, 180,30);
         return line;
 	}
 	//---------------------------------------------------------------------------------------------
-	FocusListener focus = new FocusListener() {
-	      public void focusGained(FocusEvent e) {
-	        displayMessage("Focus gained", e);
-	      }
-
-	      public void focusLost(FocusEvent e) {
-	        displayMessage("Focus lost", e);
-	      }
-
-	      void displayMessage(String prefix, FocusEvent e) {
-	        System.out.println(prefix
-	            + (e.isTemporary() ? " (temporary):" : ":")
-	            + e.getComponent().getClass().getName()
-	            + "; Opposite component: "
-	            + (e.getOppositeComponent() != null ? e.getOppositeComponent().getClass().getName()
-	                : "null"));
-	      }
-	    };
-	    
 	public  HBox makeNumberSliderRow(String s, String propName, int min, int max, int val) {
 		
 		JLabel label = new JLabel(s);
 		setSizes(label, 150, 30);
-        JSlider slider = new JSlider(JSlider.HORIZONTAL,min, max, val);
-        slider.setName(propName);
 //		label.setBorder(BorderFactory.createLineBorder(Color.green));
-		RangedIntegerTextField fld = new RangedIntegerTextField(val, min, max);
-		fld.addFocusListener(new FocusListener() {
-		      public void focusGained(FocusEvent e) {      }
-		      public void focusLost(FocusEvent e) 
-		      {   
-		    	  int val;
-		    	  String s = fld.getText();
-		    	 try
-		    	 {
-		    		 val = Integer.parseInt(s);
-		    	 }
-		    	 catch (Exception ex)
-		    	 {
-		    		 return;
-		    	 }
-		    	 System.out.println("setting slider " + slider.getName() + " to " + val);
-		    	 slider.setValue(val);
-		    }
-		});
+    	JTextField fld = new JTextField("" + val);
 		setSizes(fld, 80,30);
-        slider.addChangeListener(e -> { fld.setValue(slider.getValue());} );
+        JSlider slider = new JSlider(JSlider.HORIZONTAL,min, max, val);
+        slider.addChangeListener(e -> { fld.setText("" + slider.getValue());} );
         slider.setMajorTickSpacing(max - min);
         slider.setPaintLabels(true);
         slider.setMaximumSize(new Dimension(200, 36));
-        slider.setValue(val);
     	fld.setHorizontalAlignment(SwingConstants.RIGHT);
 		components.put(namespace + "." + propName, slider);
 		Component spacer = Box.createHorizontalStrut(40);
@@ -204,16 +160,15 @@ public static List<String> readPropertyFile(String fname) {
 	}
 	
 	//---------------------------------
-	protected RangedIntegerTextField numberField(int value, int max)
+	protected JTextField numberField(int value)
 	{
-		RangedIntegerTextField fld = new RangedIntegerTextField(value, 0, max);
+    	JTextField fld = new JTextField("" + value);
     	setSizes(fld, 50,30 );
     	fld.setHorizontalAlignment(SwingConstants.RIGHT);
     	return fld;
 	}
 	
 	//---------------------------------
-	
 	protected Box makeNumberField(String prompt, String propname, int value, int min, int max)
     {
     	Box line = Box.createHorizontalBox();
@@ -221,8 +176,7 @@ public static List<String> readPropertyFile(String fname) {
     	line.add(label);
     	setSizes(label, 180,25);
 
-    	RangedIntegerTextField fld = new RangedIntegerTextField(min, max);  
-    	fld.setValue(value);
+    	JTextField fld = new JTextField("" + value);
     	fld.setMaximumSize(new Dimension(80,30) );
     	line.add(fld);
     	fld.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -237,7 +191,7 @@ public static List<String> readPropertyFile(String fname) {
 //    	line.add(label);
     	setSizes(label, promptLen, 25);
 
-    	RangedIntegerTextField fld = new RangedIntegerTextField(min, max);  
+    	JTextField fld = new JTextField("" + value);
     	setSizes(fld, 60, 30);
     	fld.setFont(smallFont);
     	fld.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -297,7 +251,7 @@ public static List<String> readPropertyFile(String fname) {
 	//---------------------------------
 	protected HBox prepartitionOption(String namespace)
     {
-    	return makeCheckBoxLine(namespace, "Partition graph before layout", "singlePartition", defaultFont, "tip");
+    	return makeCheckBoxLine("Partition graph before layout", "singlePartition", "tip");
     }
 //	//---------------------------------
 //	protected JLabel makeLabelledCombo(String s, int x, int y, int w, int h, JComponent inParent)
@@ -308,7 +262,7 @@ public static List<String> readPropertyFile(String fname) {
 //        return label;
 //	}
 	//---------------------------------------------------------------------------------------------------------
-	protected HBox makeCheckBoxLine(String namespace, String name, String propName, Font f, String tip)
+	protected HBox makeCheckBoxLine(String name, String propName, Font f, String tip)
     {
 		HBox box = new HBox();
 		JCheckBox cb = new JCheckBox(name);
@@ -319,12 +273,10 @@ public static List<String> readPropertyFile(String fname) {
 		components.put(namespace+"." + propName, cb);
     	return box;
     }
-	
-	Font defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
 	//---------------------------------------------------------------------------------------------------------
 	protected HBox makeCheckBoxLine(String name, String propName, String tip)
 	{
-		return makeCheckBoxLine(namespace, name, propName, defaultFont , tip);
+		return makeCheckBoxLine(name, propName,  new Font(Font.DIALOG, Font.PLAIN, 12), tip);
 	}
 
 //---------------------------------------------------------------------------------------------------------
@@ -337,11 +289,6 @@ public static List<String> readPropertyFile(String fname) {
 	//------------------------------------------------------------------
 	static Font smallFont = new Font("Dialog", Font.BOLD, 10);
 	    
-	private String scoped(String method)
-	{
-		return namespace + "." + method;
-	}
-	//---------------------------------
 	protected HBox makeSpacingBox() {
 		Box page = Box.createHorizontalBox();
 		HBox line = new HBox();
@@ -351,8 +298,8 @@ public static List<String> readPropertyFile(String fname) {
 		vLabel.setFont(smallFont);
 
 		line.add(new JLabel("Spacing"), Box.createRigidArea(new Dimension(60, 5)), hLabel,
-				makeIntegerBox(scoped("nodeHorizontalSpacing")), vLabel,
-				makeIntegerBox(scoped("nodeVerticalSpacing")), Box.createRigidArea(new Dimension(45, 5)),
+				makeIntegerBox(namespace + "." + "nodeVerticalSpacing"), vLabel,
+				makeIntegerBox(namespace + "." + "nodeVerticalSpacing"), Box.createRigidArea(new Dimension(45, 5)),
 				Box.createHorizontalGlue());
 		// page.add(line);
 		// page.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -371,25 +318,20 @@ public static List<String> readPropertyFile(String fname) {
 			leftLabel.setFont(smallFont);
 			rightLabel.setFont(smallFont);
 			line.add(new JLabel("Margin"), Box.createRigidArea(new Dimension(60, 5)), topLabel, 
-					makeIntegerBox(scoped("topEdge")), Box.createRigidArea(new Dimension(10, 5)), leftLabel, 
-					makeIntegerBox(scoped("leftEdge")), Box.createRigidArea(new Dimension(10, 5)), rightLabel, 
-					makeIntegerBox(scoped("rightMargin")), Box.createHorizontalGlue());
+					makeIntegerBox(namespace + "." + "topEdge"), Box.createRigidArea(new Dimension(10, 5)), leftLabel, 
+					makeIntegerBox(namespace + "." + "leftEdge"), Box.createRigidArea(new Dimension(10, 5)), rightLabel, 
+					makeIntegerBox(namespace + "." + "rightMargin"), Box.createHorizontalGlue());
 		  	
 			return line;
 	    }
-    
-	protected Component makeIntegerBox(String propertyName, int min, int max) {
-		RangedIntegerTextField fld = new RangedIntegerTextField(0,200);
-		fld.setHorizontalAlignment(SwingConstants.RIGHT);
-		setSizes(fld, 50, 30);
-		components.put(propertyName, fld);
-		return fld;
-	}
-    
-	protected Component makeIntegerBox(String propertyName) {
-		
-		return makeIntegerBox(propertyName, 0, 200);
-	}
+	    
+		protected Component makeIntegerBox(String propertyName) {
+			JTextField fld = new JTextField();
+			fld.setHorizontalAlignment(SwingConstants.RIGHT);
+			setSizes(fld, 50, 30);
+			components.put(propertyName, fld);
+			return fld;
+		}
 
 //------------------------------------------------------------------
 // Semantic Meat

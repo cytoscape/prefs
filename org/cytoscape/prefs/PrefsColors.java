@@ -1,41 +1,41 @@
 package org.cytoscape.prefs;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.security.auth.Refreshable;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 import org.lib.Borders;
 import org.lib.ColorBrewer;
-import org.lib.ColorSwatch;
+import org.lib.ColorPane;
+import org.lib.Colors;
 import org.lib.HBox;
 import org.lib.VBox;
 
-//   http://colorbrewer2.org
-
 public class PrefsColors extends AbstractPrefsPanel {
 
-	HBox lineOfPalettes;			// this is the box that gets populated dynamically
-    Integer[] paletteSizes = { 1,2,3,4,5,6,7,8,9 };
-	JComboBox<Integer> nColorsCombo = new JComboBox<Integer>(paletteSizes);
-	
-	public ActionListener ctrlListener = new ActionListener() { public void actionPerformed(ActionEvent e)  { populate(); } };
-    ButtonGroup radioButtonGroup = new ButtonGroup();
-    ButtonGroup paletteButtonGroup = new ButtonGroup();
-	
+	HBox lineOfPalettes;
+	HBox lineOfPalettes2;
 	protected PrefsColors(Cy3PreferencesRoot dlog) {
 		super(dlog, "color");
 		lineOfPalettes = new HBox();
-		nColorsCombo.setMaximumRowCount(10);	}
+		lineOfPalettes2 = new HBox();
+//		lineOfPalettes.setBorder(Borders.red);
+//		lineOfPalettes2.setBorder(Borders.magenta);
+	}
+	public ActionListener ctrlListener = new ActionListener() { public void actionPerformed(ActionEvent e)  { populate(); } };
+    ButtonGroup buttonGroup = new ButtonGroup();
    @Override public void initUI()
     {
         super.initUI();
@@ -50,11 +50,8 @@ public class PrefsColors extends AbstractPrefsPanel {
 	  "";
 	    JTextArea text = new JTextArea(s);
 	    text.setOpaque(false);
-//	    text.setMargin(new Insets(0,20,0, 10));
+	    text.setMargin(new Insets(20,30,20, 10));
 	    page.add(text);
-//	    text.setBorder(Borders.blue);
-	    text.setPreferredSize(new Dimension(535, 60));
-	    text.setMaximumSize(new Dimension(535, 60));
 	    
 	    VBox controlBox = new VBox("controls");
 	    controlBox.setBorder(Borders.doubleRaised);
@@ -67,144 +64,119 @@ public class PrefsColors extends AbstractPrefsPanel {
 	    controlBox.add(new HBox(true, true, b));
 	    controlBox.add(new HBox(true, true, c));
 	    
-	    controlBox.add(Box.createVerticalStrut(20));
+	    controlBox.add(Box.createVerticalStrut(30));
 	    colorBlindSafeCheckBox = makeCheckBox("Color blind safe");
 	    controlBox.add(new HBox(true, true, colorBlindSafeCheckBox));
 //	    controlBox.add(new HBox(true, true, makeCheckBox("Print friendly")));
 //	    controlBox.add(new HBox(true, true, makeCheckBox("Photocopy safe")));
-	    controlBox.add(Box.createVerticalStrut(10));
-//	    controlBox.setPreferredSize(new Dimension(160, 350));
-//	    controlBox.setMaximumSize(new Dimension(160, 350));
-	    setSizes(controlBox, 160, 270);
-    
-	    JLabel label = new JLabel("Categories");
-	    nColorsCombo.setSelectedItem(5);
-	    nColorsCombo.addActionListener(ctrlListener);
-	    HBox combobox = new HBox(true, true, Box.createRigidArea(new Dimension(5,10)), label, Box.createRigidArea(new Dimension(5,10)), nColorsCombo);
-	    controlBox.add(combobox);
+	    controlBox.add(Box.createVerticalStrut(30));
+	    controlBox.setPreferredSize(new Dimension(160, 270));
+	    controlBox.setMaximumSize(new Dimension(160, 270));
 	    controlBox.add(Box.createVerticalGlue());
-
 	    HBox combined = new HBox(true, false, Box.createHorizontalStrut(18), controlBox,  
-	    		Box.createHorizontalStrut(30), makeColorSchemePicker(), Box.createHorizontalStrut(30));
-//	    combined.setBorder(Borders.red);
+	    		Box.createHorizontalStrut(30), makeColorLine(), Box.createHorizontalStrut(30));
+//	    combined.setBorder(Borders.doubleRaised);
+    
+//	    HBox line = new HBox(true, true, makeColorLine("Sequential"), makeColorLine("Divergent"), makeColorLine("Qualitative"));
+	    combined.setSpacer(new Dimension(30,30));
 	    page.add(combined);
-//	    combined.setBorder(Borders.red);
 	    populate();
-	    page.setSize(dims);
 		add(page);   
 	}
    
-   
-   VBox makeColorSchemePicker()
+   VBox makeColorLine()
    {
    		String name = "Pick a color scheme";
-	    JLabel label = new JLabel(name);
-	    HBox prompt = new HBox(Box.createRigidArea(new Dimension(32,17)), label);
+   		HBox line = new HBox();
 	    
-	    VBox box = new VBox(true, true, prompt, lineOfPalettes);
-	    setSizes(box, 400, 270);
+	    
+	    JLabel label = new JLabel(name);
+	    HBox justLabel = new HBox(Box.createRigidArea(new Dimension(32,7)), label);
+	    VBox box = new VBox(true, true, justLabel, line);
 	    box.setAlignmentX(CENTER_ALIGNMENT);
-	    box.setBorder(Borders.doubleRaised);
+//	    line.setPreferredSize(new Dimension(220, 100));
+		box.setBorder(Borders.doubleRaised);
+		box.setMaximumSize(new Dimension(420, 270));
+		
+		box.add(lineOfPalettes);
+//		box.add(Box.createRigidArea(new Dimension(8,4)));
+		box.add(lineOfPalettes2);
+		box.add(Box.createRigidArea(new Dimension(8,20)));
+
+		box.add(Box.createVerticalGlue());
 	    return box;
    }
-  
+   
+   //
+   JRadioButton makeRadioButton(String s)
+   {
+	   JRadioButton btn = new JRadioButton(s);
+	   btn.addActionListener(ctrlListener);
+	   btn.setActionCommand(s);
+	   buttonGroup.add(btn); 
+	   return btn;
+   }
+   JCheckBox makeCheckBox(String s)
+   {
+	   JCheckBox box = new JCheckBox(s);
+	   box.addActionListener(ctrlListener);
+	   return box;
+   }
+	
+
     boolean colorBlindSafe = true;
     JCheckBox colorBlindSafeCheckBox = makeCheckBox("Color blind safe");
     int count = 0;
     int offset = 0;
-    
-	public void populate()
-	{
-		String state = radioButtonGroup.getSelection().getActionCommand();
-		lineOfPalettes.removeAll();
-		ColorBrewer[] brewer = null;
-		if ("Divergent".equals(state))  
-			brewer = ColorBrewer.getDivergingColorPalettes(colorBlindSafe);
-		if ("Sequential".equals(state)) 
-			brewer = ColorBrewer.getSequentialColorPalettes(colorBlindSafe);
-		if ("Qualitative".equals(state)) 
-			brewer = ColorBrewer.getQualitativeColorPalettes(colorBlindSafe);
-	    
-	    buildPalettes(state, brewer);
-	    lineOfPalettes.setVisible(false);
-	    lineOfPalettes.setVisible(true);			// TODO force a refresh
-    }
-	    
-	void buildPalettes(String state, ColorBrewer[] brewers)
-	{
-		int len = brewers.length;
-		int nColors = (Integer) nColorsCombo.getSelectedItem();
+public void populate()
+{
+	String state = buttonGroup.getSelection().getActionCommand();
+	System.out.println("populate " + state);
+	lineOfPalettes.removeAll();
+	lineOfPalettes2.removeAll();
+	if ("Divergent".equals(state))  offset = 0;
+	if ("Sequential".equals(state))  offset = 4;
+	if ("Qualitative".equals(state))  offset = 9;
 	
-		if (len > 17)  len = 17;
-		
-		for (int i=0; i<len; i++)
-		{
-			ColorBrewer brew = brewers[i];
-			if ("Sequential".equals(state))
-			{
-				if (i==3 || i==4  || i==6  || i==8 || i==13 ) continue;  // edit out near duplicates
-			}
-			Color [] colors = brew.getColorPalette(nColors);
-			lineOfPalettes.add(makeColorColumn(colors));
-		    lineOfPalettes.add(Box.createRigidArea(new Dimension(8,4)));
-		}
-	}
-	 
-	public void deselectAllPalettes()
-	{
-		for (Component c : lineOfPalettes.getComponents())
-		{
-			if (c instanceof ClickableBox)
-				((ClickableBox)c).setSelect(false);
-		}
-	}
-	   //
-	   private  JRadioButton makeRadioButton(String s)
-	   {
-		   JRadioButton btn = new JRadioButton(s);
-		   btn.addActionListener(ctrlListener);
-		   btn.setActionCommand(s);
-		   radioButtonGroup.add(btn); 
-		   return btn;
-	   }
-	   private JCheckBox makeCheckBox(String s)
-	   {
-		   JCheckBox box = new JCheckBox(s);
-		   box.addActionListener(ctrlListener);
-		   return box;
-	   }
-		
+	ColorBrewer[] palettes  = ColorBrewer.getQualitativeColorPalettes(colorBlindSafe); 
+	
+    int[] starts = new int[] { 11, 21, 31, 41, 51, 61, 71, 81 };
+    
+    buildPalettes(starts);
+    lineOfPalettes.setVisible(false);
+    lineOfPalettes.setVisible(true);			// TODO REFRESH
+    }
 
-	   
-	ClickableBox makeColorColumn(Color[] colors)
+
+void buildPalettes(int[] starts)
+{
+	for (int i : starts)
 	{
-		ClickableBox box = new ClickableBox(false, false);
-		box.addMouseListener(box);
-		int row = 0;
-		for (Color color : colors)
+		lineOfPalettes.add(makeColorColumn(i + offset));
+	    lineOfPalettes.add(Box.createRigidArea(new Dimension(8,4)));
+	}
+	for (int i : starts)
+	{
+		lineOfPalettes2.add(makeColorColumn(i + offset));
+	    lineOfPalettes2.add(Box.createRigidArea(new Dimension(8,4)));
+	}
+
+}
+    
+    VBox makeColorColumn(int start)
+    {
+    	ClickableBox box = new ClickableBox(false, false);
+		for (int row = 0; row < 5; row++)
 		{
-			ColorSwatch c = new ColorSwatch(row++, 0, color, null, true);
+			Color color = Colors.colorFromIndex(start + row);
+			ColorPane c = new ColorPane(row, 0, color, null);
 			box.add(c);
 		}
-		box.setBorder(ClickableBox.borderOff);
-		return box;
-	}
-
-//
-//    VBox makeColorColumn(int start)
-//    {
-//    	int nColors = (Integer) nColorsCombo.getSelectedItem();
-//    	ClickableBox box = new ClickableBox(false, false);
-//		for (int row = 0; row < nColors; row++)
-//		{
-//			Color color = Colors.colorFromIndex(start + row);
-//			ColorPane c = new ColorPane(row, 0, color, null);
-//			box.add(c);
-//		}
-//		box.setBorder(BorderFactory.createLineBorder(Color.orange, 3));
-//    	return box;
-// }
+		box.setBorder(BorderFactory.createLineBorder(Color.orange, 3));
+    	return box;
+ }
     
     
     
+ //   http://colorbrewer2.org
 }

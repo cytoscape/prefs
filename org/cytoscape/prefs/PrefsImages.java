@@ -4,23 +4,16 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 
 import org.lib.Borders;
-import org.lib.HBox;
 
 public class PrefsImages extends MasterDetailPanel {
 
 	protected PrefsImages(Cy3PreferencesRoot dlog) {
 		super(dlog, "images");
 	}
-	static String introTxt1 = "    The existing Image Manager can be moved here,";
-	static String introTxt2 = "    (optionally) taking it out of the Edit menu. ";
     @Override public void initUI()
     {
-   		HBox intro = new HBox(true, new JLabel(introTxt1));
-		HBox intro2 = new HBox(true, new JLabel(introTxt2));
-		add(intro);
-		add(intro2);
         super.initUI();
-    	makeImageList();
+        makeImageList();
         splitter.setDividerLocation(0.3);
      }
 
@@ -32,7 +25,7 @@ public class PrefsImages extends MasterDetailPanel {
 	    }
 	private void addImage(String imageName, String namespace, NestedPrefPanel editor, String url)
 	{
-//		super.addRecord(imageName, namespace, editor, url);
+//		super.addaddRecord(imageName, namespace, editor, url);
 	}
 	
 	//--------------------------

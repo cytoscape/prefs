@@ -17,8 +17,7 @@ public class PrefsLegends extends AbstractPrefsPanel {
         super.initUI();
 		Box page = Box.createVerticalBox();
 	    page.add(Box.createRigidArea(new Dimension(20,50)));
-	    page.add(new JLabel("Was reserved for Legend Definition"));
-	    page.add(new JLabel("Legends will be implemented as an app, so this spot is open"));
+	    page.add(new JLabel("Reserved for Legend Definition"));
 	    page.add(Box.createRigidArea(new Dimension(20,30)));
 	    page.add(new JCheckBox("Show Edge Categories"));
 	    page.add(new JCheckBox("Show Node Colors"));

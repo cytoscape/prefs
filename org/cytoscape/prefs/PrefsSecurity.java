@@ -5,11 +5,8 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.lib.BoxComponent;
@@ -23,35 +20,19 @@ public class PrefsSecurity extends AbstractPrefsPanel {
 		super(dlog, "privacy");
 //		namespace = "proxy";
 	}
-    String introTxt = "Your network administration may require a proxy server,\nan intermediate computer to filter Internet traffic.";
-
     @Override public void initUI()
     {
         super.initUI();
 		setBorder(BorderFactory.createEmptyBorder(20,32,0,0));
 		Box page = Box.createVerticalBox();
 	    page.add(new HBox(true, true, new JLabel("Security")));
-	    page.add(Box.createRigidArea(new Dimension(30,15)));
-	    
-		JTextArea intro = new JTextArea(introTxt );
-		intro.setOpaque(false);
-	    page.add(new HBox(true, true, intro));
-	    page.add(Box.createRigidArea(new Dimension(30,15)));
+	    page.add(Box.createRigidArea(new Dimension(30,40)));
 
 	    page.add(new HBox(true, true, makeProxyPanel()));
-	    page.add(Box.createRigidArea(new Dimension(30,15)));
-	    page.add(new HBox(true, true, new JLabel("Privacy")));
-	    page.add(Box.createRigidArea(new Dimension(30,15)));
-	    page.add(makeCheckBoxLine("Check Version Info & News on Startup", "privacy.check.version", "tip"));
-	  	page.add(makeCheckBoxLine("Check for App Store Updates", "privacy.check.appstore", "tip"));
+	    page.add(Box.createRigidArea(new Dimension(30,40)));
+	  	page.add(makeCheckBoxLine("Check Version Info on Startup", "privacy.check.version", "tip"));
 	  	page.add(makeCheckBoxLine("Send telemetry reports to Cytoscape Team", "privacy.telemetry", "tip"));
 	  	page.add(makeCheckBoxLine("Provide contact info", "user.contact", "provide an email address where we can reach you"));
-	  	page.add(makeLabeledField("Email", "contact.email", "an address or any identifier goes here"));
-
-//	  	JComponent box = components.get("contact.email");
-//	  	if (box instanceof JPanel)
-//	  		((JPanel)box).setEnabled(false);
-
 		add(page);   
 	}
     
@@ -97,51 +78,5 @@ public class PrefsSecurity extends AbstractPrefsPanel {
 		return panel;
 	}
 	
-	// TODO
-//	   @Override public void install(Map<String, String> props)
-//	    {
-////		   Map<String, String> map = getPropertyMap("cytoscape3.props");
-//		   for (String fld : props.keySet())
-//		   {
-//			  String shortened = fld.replaceAll(" ", "");
-//			  String squished = shortened.substring(0, 1).toLowerCase() + shortened.substring(1);
-//			  String key = "cytoscape3." + squished;
-//			  String value = props.get(key);
-//			  if (value != null)
-//			  {
-//			   JComponent comp = components.get(key);
-//			   if (comp == null) continue;	
-//			   if (comp instanceof JCheckBox)
-//			   {
-//				   JCheckBox ck = (JCheckBox) comp;
-//				   boolean checked = value.toLowerCase().startsWith("t");
-//				   ck.setSelected(checked);
-//			   }
-//			   if (comp instanceof JTextField)
-//				   ((JTextField) comp).setText(value);
-//			  }
-//		   }
-//	    }
-//	   
-//	   @Override public Map<String,String> extract()
-//	    {
-//		   Map<String,String> attributes = new HashMap<String,String>();
-//		   for (String fld : displayNames)
-//		   {
-//			   String shortened = fld.replaceAll(" ", "");
-//			   String squished = shortened.substring(0, 1).toLowerCase() + shortened.substring(1);
-//				JComponent comp = components.get("cytoscape3." + squished);
-//			   if (comp == null) continue;	
-//			   if (comp instanceof JCheckBox)
-//			   {
-//				   JCheckBox ck = (JCheckBox) comp;
-//				   attributes.put(squished, boolState(ck));
-//			   }
-//		   }
-//		   overwriteProperties("cytoscape3.props", attributes);
-//		   return attributes;
-//	    }	 
-//	   
-
 
 }
