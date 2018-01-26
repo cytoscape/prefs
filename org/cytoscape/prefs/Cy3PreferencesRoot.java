@@ -36,17 +36,11 @@ public class Cy3PreferencesRoot extends PreferenceContainer implements ActionLis
 	public static double ROW_HEIGHT = (WINDOW_HEIGHT - FOOTER_HEIGHT) / 3;
 
 	//----------------------------------------------------------------------------------------------------
-	// main:  we assume an Application and a PrefsDocument 
-	//		We use the PrefsDocument to create a PreferencesRoot container.
-	//		
-	//----------------------------------------------------------------------------------------------------
 	public static void main(String[] args) {
 		try {
 			String lf = UIManager.getSystemLookAndFeelClassName();
 			UIManager.setLookAndFeel(lf);
 			
-//			CyPrefsApplication application = new CyPrefsApplication(new String[] { "prefs"});
-//			application.getPrefs();
 			Cy3PreferencesRoot pref = new Cy3PreferencesRoot();
 			pref.showDlog();
 		} catch (Throwable e)	
